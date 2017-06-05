@@ -1,0 +1,21 @@
+<div class="panel panel-default">
+   
+  <div class="panel-heading">
+    
+    <h3 class="panel-title">
+      <% if current_user.admin? || team.station_id==@station.id %>
+      <p class="alignright">
+        <%= link_to team ,class: "btn btn_microquestion btn-danger icon", method: :delete, data: { confirm: "Löschen?" } do %><i class="fa fa-trash" aria-hidden="true"></i><% end %>
+      </p>
+      <% end %>
+      <%= link_to :controller => "teams", :action => "show", :id => team.id, :station_id => @station.id do %>
+      <div class="btn user_answer_btn" style="width: 100%;"><%= team.name %></div>
+      <% end %>
+      
+      
+      
+      <div class="clearfix"></div>
+    </h3>
+  </div>
+  
+</div>

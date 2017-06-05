@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<head>
+   <title>Ersti Rally</title>
+    <%= stylesheet_link_tag "application", media: "all",
+                                           "data-turbolinks-track" => true %>
+    <%= javascript_include_tag "application", "data-turbolinks-track" => true %>
+    <%= csrf_meta_tags %>
+  <%= csrf_meta_tags %>
+  <%= analytics_init if Rails.env.production? %>
+  <%= render 'layouts/shim' %>
+</head>
+<body>
+    
+            
+    <%= render 'layouts/header' %>
+    
+    <div class="containter phone">
+      
+      <%= render "shared/reloadinformation" %>
+      <%= yield %>
+      
+    </div>
+</body>
+</html>

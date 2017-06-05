@@ -1,0 +1,26 @@
+<% if logged_in? %>
+  <% if current_user.admin? %>
+    <%= render 'shared/reloadinformation' %>
+  
+    <div class="row">
+        <% if (GamesController.get_activ_quiz_id == nil) %>
+          <%= link_to "Quiz auswählen",quizzes_url, :method => "get" , class: 'btn'%>
+        <% else %>
+          <% @quiz = Quiz.find(GamesController.get_activ_quiz_id) %>
+          <% if !@quiz.microquestions.any? %>
+            <%= link_to "Fragen erstellen", @quiz , {class: 'btn'}%>
+          <% else %>
+            <% if @quiz.activ_question_id == nil %>
+              <%= link_to "Aktiviere Erste Frage", {:controller => "quizzes", :action => "set_first_question_activ", :id => @quiz.id}, {class: 'btn'}%>
+            <% else %>
+                <center>
+                  <%= render partial: "static_pages/activ_game_collecting_answers" %>
+                  <%= render partial: "static_pages/activ_game_show_results" %>
+                  <%= render partial: "static_pages/activ_game_show_winner" %>
+                </center>
+            <% end %>
+          <% end %>
+        <% end %>
+    </div>
+  <% end %>
+<% end %>

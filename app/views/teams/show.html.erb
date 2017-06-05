@@ -1,0 +1,96 @@
+<%= csrf_meta_tag %> <!-- Damit bei einem AJAX Call der Auth. Token mitgesendet wird -->
+<% rally = Rally.find(@team.rally_id) %>
+<% station = @station %>
+
+<div class="row">
+    <aside class="col-xs-1">
+    </aside>
+    
+    <section class="col-xs-10">
+           <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h3 class="panel-title">
+                          <% if station.admin? && current_user.admin? %>
+                   <%= text_field_tag :team_name_input, @team.name, class: "answinput" , :id => "team_name" %>
+                   <% else %>
+                    <center><h3><%= @team.name %></h3></center>
+                   <% end %>
+                        
+                        </h3>
+                </div>
+            
+            <% if @team.picture? %>
+                                <div class="panel-body">
+                                    <%= image_tag(@team.picture.url, alt: "Titelbild" ) %>
+                                </div>
+                                <div class="panel-heading"><%= link_to :controller => "teams", :action => "delete_picture", :id => @team.id do %>
+                                    <h3 class="panel-title"><i class="fa fa-trash" aria-hidden="true"></i>Löschen</h3>
+                                    <% end %>
+                                </div>
+                   
+                </div>
+                    
+            <% else %>
+            </div>
+                <% if station.id == current_user.id || current_user.admin? %>
+                <%= render "picture" %>
+                <% end %>
+            <% end %>
+           
+              <%= render partial: 'shared/station_micropost_form' , locals: {team_id: @team.id, station_id: station.id} %>
+              
+              <div class="panel panel-default">
+                  
+                <div class="panel-heading">
+                    <h3 class="panel-title">
+                    <center><h4>Punkte der Station</h4></center>
+                        </h3>
+                </div>
+              <div class="panel-body">
+                  
+              <div class="btn user_answer_btn" style="width: 100%;"><%= GamesController.get_total_points_for_team_for_station(@team,station) %></div>
+              </div>
+            </div>
+              
+           <%= render "stations/back_panel" %>
+            
+    </section>
+    
+</div>
+   
+
+<script type="text/javascript">
+    var last_change_made = new Date(); //time now in ms
+    var time_to_wait_until_save_changes_in_ms = 1*1000  // wait 1 sec
+
+    function check_time_passed_for_change(input_change_time){
+        if( last_change_made == input_change_time){
+            update();
+        }
+    }
+    
+    function input_was_made(){  
+        last_change_made = new Date();
+        setTimeout(check_time_passed_for_change.bind(null, last_change_made), time_to_wait_until_save_changes_in_ms);
+    }
+
+    function update() {
+      var team_name = $('#team_name').val();
+     
+      var request = void 0;
+      request = $.ajax({type: "PUT",
+                        beforeSend: function(xhr) {xhr.setRequestHeader('X-CSRF-Token', $('meta[name="csrf-token"]').attr('content'))}, //<!-- Damit bei einem AJAX Call der Auth. Token mitgesendet wird -->
+                        dataType: "script",
+                        url: '/teams/'+<%= @team.id %>,
+                        contentType: 'application/json',
+                        data: JSON.stringify({ 'team': {'id': <%= @team.id %> ,
+                                                                'name': team_name
+                                                                }, _method:'put' })
+                }).done(function( msg ){
+                   //alert( "Klappt" );
+                });
+    };
+    
+    $('#team_name').on('input', input_was_made);
+
+</script>

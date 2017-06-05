@@ -1,0 +1,95 @@
+<div id="rally_id" class="hidden"><%= @rally.id %></div>
+<%= csrf_meta_tag %> <!-- Damit bei einem AJAX Call der Auth. Token mitgesendet wird -->
+
+<% provide(:title, @rally.name) %>
+
+<div class="row">
+    <section class="col-xs-12">
+        
+        <div class="panel panel-default">
+              <div class="panel-body">
+                  <%= link_to :controller => "rallies", :action => "bier_anfragen", :id => @rally.id do %>
+              <div class="btn user_answer_btn" style="width: 100%;"><h4><i class="fa fa-pencil-square-o" aria-hidden="true"></i></h4>Bier Anfragen</div>
+              <% end %>
+              </div>
+            </div>
+            
+            <div class="panel panel-default">
+              <div class="panel-body">
+                  <%= link_to :controller => "rallies", :action => "leaderboard", :id => @rally.id do %>
+              <div class="btn user_answer_btn" style="width: 100%;"><h4><i class="fa fa-pencil-square-o" aria-hidden="true"></i></h4>Punktestand</div>
+              <% end %>
+              </div>
+            </div>
+            
+             <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h3 class="panel-title"><h4>Rally Name</h4></h3>
+                </div>
+                <div class="panel-body">
+                  <%= text_field_tag :rally_name_input, @rally.name, class: "answinput" , :id => "rally_name_input" %>
+                </div>
+            </div>
+            
+            
+                    <div class="panel panel-default">
+              <div class="panel-body">
+                  <%= link_to :controller => "rallies", :action => "stations", :id => @rally.id do %>
+              <div class="btn user_answer_btn" style="width: 100%;"><h4><i class="fa fa-pencil-square-o" aria-hidden="true"></i></h4>Stationen (<%= @stations.count %>)</div>
+              <% end %>
+              </div>
+            </div>
+            
+                        <div class="panel panel-default">
+              <div class="panel-body">
+                  <%= link_to :controller => "rallies", :action => "teams", :id => @rally.id do %>
+              <div class="btn user_answer_btn" style="width: 100%;"><h4><i class="fa fa-pencil-square-o" aria-hidden="true"></i></h4>Teams (<%= @teams.count %>)</div>
+              <% end %>
+              </div>
+            </div>
+            
+            
+
+    
+  </section>
+    
+</div>
+
+<script type="text/javascript">
+    var rally_id = "<%= @rally.id %>";
+
+    var last_change_made = new Date(); //time now in ms
+    var time_to_wait_until_save_changes_in_ms = 1*1000  // wait 1 sec
+
+    function check_time_passed_for_change(input_change_time){
+        if( last_change_made == input_change_time){
+            update();
+        }
+    }
+    
+    function input_was_made(){  
+        last_change_made = new Date();
+        setTimeout(check_time_passed_for_change.bind(null, last_change_made), time_to_wait_until_save_changes_in_ms);
+    }
+
+    
+    function update() {
+      var rally_name = $('#rally_name_input').val();
+      
+      var rally_id = $('#rally_id').html();
+     
+      var request = void 0;
+      request = $.ajax({type: "PUT",
+                        beforeSend: function(xhr) {xhr.setRequestHeader('X-CSRF-Token', $('meta[name="csrf-token"]').attr('content'))}, //<!-- Damit bei einem AJAX Call der Auth. Token mitgesendet wird -->
+                        dataType: "script",
+                        url: '/rallies/'+rally_id,
+                        contentType: 'application/json',
+                        data: JSON.stringify({ 'rally': {'name': rally_name, 
+                                                        }, 'ajax' : true, _method:'put' })
+                }).done(function( msg ){
+                    //alert( "Umbenannt: "+value );
+                });
+    };
+    
+     $('#rally_name_input').on('input', input_was_made);
+</script>

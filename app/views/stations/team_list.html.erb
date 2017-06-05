@@ -1,0 +1,21 @@
+<% provide(:title, @station.name) %>
+<div class="row">
+  <aside class="col-xs-1">
+    </aside>
+  <div class="col-xs-10">
+    <% if GamesController.is_a_rally_activ %>
+         <%= render GamesController.get_teams_for_rally(GamesController.get_activ_rally), locals: {station_id: @station.id} %>
+  <% end %>
+  
+  <div class="panel panel-default">
+    <div class="panel-body">
+      <%= link_to :controller => "teams", :action => "new", :rally_id => GamesController.get_rally_for_station(@station).id do %>
+        <div class="btn user_answer_btn" style="width: 100%;"><h4><i class="fa fa-plus-square" aria-hidden="true"></i><br></h4>Neues Team</div>
+      <% end %>
+    </div>
+  </div>
+  
+  <%= render "back_panel" %>
+  
+</div>
+</div>

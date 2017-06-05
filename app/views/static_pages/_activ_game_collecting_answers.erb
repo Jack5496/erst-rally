@@ -1,0 +1,46 @@
+<% if GamesController.game_controller_question_collect_phase %>
+  <aside class="col-xs-4">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title">
+          Anzahl Antworten
+        </h3>
+      </div>
+      <div class="panel-body">
+          <div id="answers_amount_for_activ_question">
+            0
+          </div>
+      </div>
+    </div>
+  </aside>
+  
+  <div class="col-lg-4">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title">
+          Antworten ist:  
+          <% if GamesController.are_answers_allowed %>
+            AN
+          <% else %>
+            AUS
+          <% end %>
+        </h3>
+      </div>
+      <% if GamesController.are_answers_allowed %>
+            <%= link_to :controller => "games", :action => "disable_answering", :id => @quiz.id do %><div class="panel-body">Ausschalten</div><% end %>
+          <% else %>
+            <%= link_to :controller => "games", :action => "enable_answering", :id => @quiz.id do %><div class="panel-body">Anschalten</div><% end %>
+          <% end %>
+    </div>
+    
+    
+    <div class="panel panel-default">
+      <%= link_to :controller => "games", :action => "close_answering", :id => @quiz.id do %><div class="panel-heading">
+      <h3 class="panel-title">
+        Alle Gesammelt
+      </h3>
+      </div>
+      <% end %>
+      </div>
+  </div>
+<% end %>

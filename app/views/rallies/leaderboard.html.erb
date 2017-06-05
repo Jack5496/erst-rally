@@ -1,0 +1,41 @@
+<% provide(:title, @rally.name) %>
+
+<div class="row">
+  <div class="col-xs-12">
+    
+    <% stations = GamesController.get_stations_for_rally(@rally) %>
+    <% teams = GamesController.get_teams_for_rally(@rally) %>
+    <% leaderboard = Hash.new %>
+    
+    <% teams.each do |team| %>
+                <% leaderboard[team] = GamesController.get_total_points_for_team_for_rally(team,@rally) %>
+    <% end %>
+    
+    <% leaderboard = leaderboard.sort_by{|_key, value| value} %>
+    <% leaderboard = Hash[leaderboard.sort.reverse] %>
+    
+    <% pos = 1 %>
+    <% leaderboard.each do |key, value| %>
+        <div class="panel panel-default">
+            <div class="panel-body">
+                <div class="btn user_answer_btn" style="width: 100%;"> <div class="alignleft"><%= pos %></div><%= key.name %><br><%= value %></div>
+            </div>
+        </div>
+        <% pos+=1 %>
+    <% end %>
+        
+                
+    
+    <div class="panel panel-default">
+                <div class="panel-body"><%= link_to @rally do %>
+                    <div class="btn user_answer_btn" style="width: 100%;">Zurück</div>
+                <% end %>
+                </div>
+            </div>
+    
+
+  
+    
+  </div>
+  
+</div>

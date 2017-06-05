@@ -1,0 +1,55 @@
+<%= form_for(Rally.new, html: { multipart: true }) do |f| %>
+
+
+  <div class="row">
+      <aside class="col-xs-4">
+        
+    </aside>
+      <section class="quiz_info col-xs-4">
+      <table>
+        <tr>
+          <div class="panel panel-default">
+            <div class="panel-heading">
+              <h3 class="panel-title">Name der Rally</h3>
+            </div>
+            <div class="panel-body">
+              <%= f.text_field :name, placeholder: "Name der Rally" , class: "answinput", required: true %>
+            </div>
+          </div>
+        </tr>
+        <tr>
+          <div class="panel panel-default">
+            <div class="panel-heading">
+              <h3 class="panel-title">Titelbild</h3>
+            </div>
+            <div class="panel-body">
+              <span class="picture">
+                <%= f.file_field :picture, accept: 'image/jpeg,image/gif,image/png' %>
+              </span>
+            </div>
+          </div>
+        </tr>
+      </table>    
+            
+      <div class="panel panel-default">
+        <div class="panel-heading">
+          <%= f.hidden_field :station_id, :value => current_user.id %>
+          <%= f.submit "Erstellen"%>
+        </div>
+      </div>
+    </section>
+  </div>
+
+
+<% end %>
+
+<script type="text/javascript">
+  $('#quiz_picture').change(function() {
+    var size_in_megabytes = this.files[0].size/1024/1024;
+    if (size_in_megabytes > 5) {
+      alert('Maximum file size is 5MB. Please choose a smaller file.');
+    }
+    
+  });
+</script>
+

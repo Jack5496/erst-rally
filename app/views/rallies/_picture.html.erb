@@ -1,0 +1,41 @@
+<%= form_for(@quiz, html: { multipart: true }) do |f| %>
+
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <span class="picture">
+          <center><input type="file" id="station_picture" name="station[picture]" class="filestyle user_answer_btn" data-input="false" data-classIcon="fa fa-camera" data-buttonText="T"></center>
+        </span>
+      </div>
+      <div id="upload_button" style="display: none;" >
+        <div class="panel-body">
+                  <%= button_tag(type: "submit", class: "btn user_answer_btn", style: "width: 100%;") do %>
+              <i class="fa fa-upload" aria-hidden="true"></i> Hochladen
+          <% end %>
+        
+        </div>
+      </div>
+    </div>
+   
+<% end %>
+
+<script type="text/javascript">
+
+  $('#quiz_picture').attr("data-input",false);
+  $('#quiz_picture').attr("data-buttonText","Auswählen");
+  $('#quiz_picture').attr("data-buttonName","filebtn");
+
+  $('#quiz_picture').bind('change', function() {
+    var fileName = $(this).val();
+    show_submit_field_if_file_selectet(fileName);
+    
+    var size_in_megabytes = this.files[0].size/1024/1024;
+    if (size_in_megabytes > 5) {
+      alert('Maximum file size is 5MB. Please choose a smaller file.');
+    }
+  });
+  
+  function show_submit_field_if_file_selectet(fileName){
+    $('#upload_button').toggle(fileName!="");
+  }
+</script>
+

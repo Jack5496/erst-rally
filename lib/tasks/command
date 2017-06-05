@@ -1,0 +1,7 @@
+bundle exec rake db_tasks:rebuild
+
+
+
+
+Picuture Uploader regenerate
+rails generate uploader Picture

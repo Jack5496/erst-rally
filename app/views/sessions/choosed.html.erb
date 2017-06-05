@@ -1,0 +1,38 @@
+<% provide(:title, "Log in") %>
+
+
+<div class="row">
+  <div class="col-xs-12">
+    <%= form_for(:session, url: login_path) do |f| %>
+    
+     <div class="panel panel-default">
+    <div class="panel-heading">
+      <h3><%= station_name %></h3>
+    </div>
+    </div>
+    
+      
+      <div class="panel panel-default">
+    <div class="panel-heading">
+      <h6>
+      <%= f.password_field :password , placeholder: "Password", class: 'answinput' %>
+      </h6>
+          </div>
+    <%= f.hidden_field :name, :value => station_name %>
+      <%= f.submit "Log in", class: "btn btn-primary" %>
+    </div>
+      
+      
+
+
+      
+      
+      
+            <%= f.label :remember_me, class: "checkbox inline" do %>
+        <%= f.check_box :remember_me %>
+        <span>Remember me on this computer</span>
+      <% end %>
+      
+    <% end %>
+  </div>
+</div>

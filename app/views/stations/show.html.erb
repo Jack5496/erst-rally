@@ -1,0 +1,91 @@
+<% provide(:title, @station.name) %>
+<div class="row">
+  <div class="col-xs-12">
+    
+    <% if current_user.admin? && @station.admin? %>
+    <div class="panel panel-default">
+      <div class="panel-body">
+          <%= link_to rallies_path do %>
+      <div class="btn user_answer_btn" style="width: 100%;"><h4><i class="fa fa-pencil-square-o" aria-hidden="true"></i></h4>Rallies</div>
+      <% end %>
+      </div>
+    </div>
+   
+   
+    <% else %>
+    
+    <% beer_status = @station.beer_status %>
+    <% erstis_status = @station.erstis_status %>
+    <% station_status = @station.station_status %>
+    <% chat_status = @station.chat_status %>
+    
+    <div class="col-xs-6">
+    <div class="panel panel-default">
+      <div class="panel-body">
+          <%= link_to :controller => "stations", :action => "team_list", :id => @station.id do %>
+      <div class="btn user_answer_btn" style="width: 100%;"><h4><i class="fa fa-pencil-square-o" aria-hidden="true"></i></h4>Punkte</div>
+      <% end %>
+      </div>
+    </div>
+    
+    
+    <div class="panel panel-default">
+      <div class="panel-body">
+        <%= link_to :controller => "stations", :action => "edit_view", :id => @station.id do %>
+          <div class="btn user_answer_btn" style="width: 100%;"><h4><i class="fa fa-info" aria-hidden="true"></i></h4><%= @station.phone %></div>
+           <% end %>
+      </div>
+    </div>
+    
+    </div>
+    <div class="col-xs-6">
+      
+    <div class="panel panel-default">
+      <div class="panel-body">
+          <%= link_to :controller => "stations", :action => "beer_status", :id => @station.id do %>
+      <div class="btn user_answer_btn" style="width: 100%;"><h4><div id="beer_status"><%= beer_status.html_safe %></div></h4>Bier Status</div>
+      <% end %>
+      </div>
+    </div>
+    
+    <div class="panel panel-default">
+      <div class="panel-body">
+          <%= link_to :controller => "stations", :action => "station_status", :id => @station.id do %>
+      <div class="btn user_answer_btn" style="width: 100%;"><h4><%= station_status.html_safe %></h4>Status</div>
+      <% end %>
+      </div>
+    </div>
+    
+    <div class="panel panel-default">
+      <div class="panel-body">
+         <%= link_to logout_path, method: "delete" do %>
+      <div class="btn user_answer_btn" style="width: 100%;"><h4><i class="fa fa-sign-out" aria-hidden="true"></i></h4>Logout</div>
+      <% end %>
+      </div>
+    </div>
+    
+     
+    
+    </div>
+    
+    <div class="panel panel-default">
+      <div class="panel-body">
+           
+           <%= link_to :controller => "stations", :action => "edit_view", :id => @station.id do %>
+           <% if @station.picture? %>
+             <div class="btn user_answer_btn" style="width: 100%;"><%= image_tag(@station.picture.url, alt: "Bild", style: 'width:100%;' ) %></div>
+           <% else %>
+            <div class="btn user_answer_btn" style="width: 100%;"><h4><i class="fa fa-camera" aria-hidden="true"></i></i></h4>Foto</div>
+           <% end %>
+         <% end %>
+      </div>
+    </div>
+    
+    
+    
+     <% end %>
+    
+    
+  </div>
+  
+</div>

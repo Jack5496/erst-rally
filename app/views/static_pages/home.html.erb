@@ -1,0 +1,18 @@
+<%= render 'shared/reloadinformation' %>
+
+<% if logged_in? %>
+  <div class="row">
+    <div class="col-xs-12 vcenter">
+      <% @rally = GamesController.get_activ_rally %>
+      <% if @rally == nil %>
+        <%= link_to "Komm später",home_url , class: 'btn user_answer_btn'%>
+      <% else %>
+        <%= link_to current_user do %>
+         <div class="btn user_answer_btn" style="width: 100%;"><h3><i class="fa fa-unlock-alt" aria-hidden="true"></i></h3>Login</div>
+        <% end %>
+      <% end %>
+      
+      <noscript>Zum neuladen den den Knopf drücken</noscript>
+    </div>
+  </div>
+<% end %>

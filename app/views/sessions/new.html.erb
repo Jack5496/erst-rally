@@ -1,0 +1,22 @@
+<% provide(:title, "Log in") %>
+<div class="row">
+  <div class="col-xs-12 ">
+    <% activ_rally = GamesController.get_activ_rally %>
+    <% if activ_rally != nil %>
+      <%= render GamesController.get_stations_for_rally(activ_rally) %>
+    <% end %>
+    
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
+    
+     <%= render Station.find(1) %>
+   
+  </div>
+</div>

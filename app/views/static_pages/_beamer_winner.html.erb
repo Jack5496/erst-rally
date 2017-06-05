@@ -1,0 +1,20 @@
+<% if GamesController.beamer_show_winner %>
+  <% @quiz = GamesController.get_activ_quiz %>
+  <% user_a = User.find(@quiz.user_a_id) %>
+  <% user_b = User.find(@quiz.user_b_id) %>
+  
+  <% points_user_a = GamesController.get_total_points_for_player_in_activ_quiz(user_a) %>
+  <% points_user_b = GamesController.get_total_points_for_player_in_activ_quiz(user_b) %>
+  
+  <% if points_user_a<points_user_b %>
+    <% gewinner = user_a.name %>
+  <% else %>
+    <% gewinner = user_b.name %>
+  <% end %>
+  
+  Muss noch schöner mit Animationen gemacht werden
+  <h3>
+    Gewinner ist: <br>
+    <%= gewinner %>
+  </h3>
+<% end %>

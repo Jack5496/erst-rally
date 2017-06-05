@@ -1,0 +1,179 @@
+<% if GamesController.beamer_show_answers_result %>
+ 
+  <% user_a = User.find(@quiz.user_a_id) %>
+  <% user_b = User.find(@quiz.user_b_id) %>
+  <% microquestion = Microquestion.find(@quiz.activ_question_id) %>
+  
+  <% user_a_answered = (user_a.microposts.find_by(microquestion_id: @quiz.activ_question_id) != nil) %>
+  <% user_b_answered = (user_b.microposts.find_by(microquestion_id: @quiz.activ_question_id) != nil) %>
+  
+  <% show_panel_player_one = !GamesController.beamer_get_show_results_show_audience %>
+  <% show_panel_player_two = !GamesController.beamer_get_show_results_show_audience %>
+  
+  <% show_panel_audience = user_a_answered &&
+                           user_b_answered &&
+                           !GamesController.beamer_get_show_results_show_audience %>
+                           
+  <% show_panel_audience_average = GamesController.beamer_get_show_results_show_audience && 
+                                   !GamesController.beamer_get_show_results_show_audience_average %>
+                                   
+  <% show_panel_give_points = GamesController.beamer_get_show_results_show_audience_average &&
+                              GamesController.beamer_get_show_results_show_audience &&
+                              !GamesController.points_given_for_activ_question %>
+                              
+  <% show_panel_question_control = !show_panel_player_one &&
+                                   !show_panel_player_two &&
+                                   GamesController.beamer_get_show_results_show_audience && 
+                                   GamesController.beamer_get_show_results_show_audience_average &&
+                                   GamesController.points_given_for_activ_question %>
+  
+  
+  
+ 
+  <aside class="col-xs-4">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title">Fragen Information</h3>
+      </div>
+        <div class="panel-body">
+          Minimum: <%= microquestion.min_value %><br>
+          Maximum: <%= microquestion.max_value %><br>
+          Schrittweite: <%= microquestion.step_value %><br>
+        </div>
+        <div class="panel-heading">
+          Antworten: <div id="answers_amount_for_activ_question">0</div><br>
+          
+          Durchschnitt:<br>
+          <% @activ_question = GamesController.get_activ_question %>
+          <%= MicroquestionsController.get_average_value_of_answers(@activ_question) %>
+        </div>
+    </div>
+  </aside>
+  
+  <div class="col-xs-4">
+    <div id="show_panel_question_control" style="display: none;"> 
+      <div class="panel panel-default">
+        <div class="panel-heading">
+          <h3 class="panel-title">
+            Steuerung
+          </h3>
+        </div>
+       
+          <% if is_last_question_activ(@quiz) %>
+            <%= link_to :controller => "quizzes", :action => "set_winner_screen_activ", :id => @quiz.id do %><div class="panel-body">zur Siegertreppe</div><% end %>
+          <% else %>
+            <%= link_to :controller => "quizzes", :action => "set_next_question_activ", :id => @quiz.id do %><div class="panel-body">Nächste Frage</div><% end %>
+          <% end %>
+      </div>
+      </div>
+      
+    <div id="show_panel_player_one" style="display: none;">
+      <%= render partial: 'shared/candidat_micropost_form' , locals: {candidat_id: user_a.id}%>
+    </div>
+      
+    <div id="show_panel_player_two" style="display: none;">
+      <%= render partial: 'shared/candidat_micropost_form' , locals: {candidat_id: user_b.id}%>
+    </div>
+      
+    <div id="show_panel_audience" style="display: none;">
+      <div class="panel panel-default">
+        <div class="panel-heading">
+          <h3 class="panel-title">
+            Publikum Antworten
+          </h3>
+        </div>
+        <% if GamesController.beamer_get_show_results_show_audience %>
+          <%= link_to :controller => "games", :action => "beamer_disable_show_results_show_audience" do %><div class="panel-body">Verberge Antworten</div><% end %>
+        <% else %>
+          <%= link_to :controller => "games", :action => "beamer_enable_show_results_show_audience" do %><div class="panel-body">Zeige Antworten</div><% end %>
+        <% end %>
+      </div>
+      </div>
+      
+    <div id="show_panel_audience_average" style="display: none;">
+      <div class="panel panel-default">
+        <div class="panel-heading">
+          <h3 class="panel-title">
+            Publikum Durchschnitt
+          </h3>
+        </div>
+        <% if GamesController.beamer_get_show_results_show_audience_average %>
+          <%= link_to :controller => "games", :action => "beamer_disable_show_results_show_audience_average" do %><div class="panel-body">Verbergen</div><% end %>
+        <% else %>
+          <%= link_to :controller => "games", :action => "beamer_enable_show_results_show_audience_average" do %><div class="panel-body">Zeigen</div><% end %>
+        <% end %>
+      </div>
+      </div>
+      
+    <div id="show_panel_give_points" style="display: none;">
+      <div class="panel panel-default">
+        <div class="panel-heading">
+          <h3 class="panel-title">
+            Punktestand
+          </h3>
+        </div>
+        <% if !GamesController.points_given_for_activ_question %>
+          <%= link_to :controller => "games", :action => "calc_game_points_for_activ_question" do %><div class="panel-body">Berechnen</div><% end %>
+        <% else %>
+          <%= link_to :controller => "games", :action => "calc_game_points_for_activ_question" do %><div class="panel-body">Neu Berechnen</div><% end %>
+        <% end %>
+      </div>
+      </div>
+  
+  </div>
+  
+  <aside class="col-xs-4">
+    <div class="panel panel-default">
+      <div class="panel-heading" onclick="advanced()"><%= link_to :remote => true do %>
+        <h3 class="panel-title">
+          Advanced
+        </h3>
+      </div><% end %>
+    </div>
+  </aside>
+  
+  <script type="text/javascript">
+  
+    window.onload = hide_or_show_panels
+    
+    var show_panel_player_one = <%= show_panel_player_one %>
+    var show_panel_player_two = <%= show_panel_player_two %>
+    var show_panel_audience = <%= show_panel_audience %>
+    var show_panel_audience_average = <%= show_panel_audience_average %>
+    var show_panel_give_points = <%= show_panel_give_points %>
+    var show_panel_question_control = <%= show_panel_question_control %>
+    
+    function hide_or_show_panels(){
+        $("#show_panel_player_one").toggle(show_panel_player_one);
+        $("#show_panel_player_two").toggle(show_panel_player_two);
+        $("#show_panel_audience").toggle(show_panel_audience);
+        $("#show_panel_audience_average").toggle(show_panel_audience_average);
+        $("#show_panel_give_points").toggle(show_panel_give_points);
+        $("#show_panel_question_control").toggle(show_panel_question_control);
+    }
+    
+    var advanced_show = false;
+    function advanced(){
+      advanced_show = !advanced_show;
+      
+      if(advanced_show){
+        show_all();
+      }
+      else{
+        hide_or_show_panels();
+      }
+    }
+      
+    function show_all(){
+      $("#show_panel_player_one").show();
+      $("#show_panel_player_two").show();
+      $("#show_panel_audience").show();
+      $("#show_panel_audience_average").show();
+      $("#show_panel_give_points").show();
+      $("#show_panel_question_control").show();
+    }
+    
+  </script>
+  
+  
+<% end %>

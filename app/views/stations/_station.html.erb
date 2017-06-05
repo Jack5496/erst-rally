@@ -1,0 +1,19 @@
+    <div class="panel panel-default">
+      <div class="panel-body">
+        
+        <% if logged_in? %>
+        <% if current_user.admin? %>
+      <p class="alignright">
+        <%= link_to station ,class: "btn btn_microquestion btn-danger icon", method: :delete, data: { confirm: "Löschen?" } do %><i class="fa fa-trash" aria-hidden="true"></i>Löschen <% end %>
+      </p>
+      <%= link_to station do %><div class="btn user_answer_btn" style="width: 100%;"><%= station.name %></div><% end %>
+      <div class="clearfix"></div>
+        <% end %>
+    <% else %>
+      <%= link_to :controller => "sessions", :action => "login_as", :name => station.name do %>
+       <div class="btn user_answer_btn" style="width: 100%;"><%= station.name %></div>
+      <% end %>
+    <% end %>
+
+      </div>
+    </div>

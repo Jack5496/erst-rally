@@ -1,0 +1,167 @@
+<% provide(:title, @station.name) %>
+<div class="row">
+  <div class="col-xs-12">
+   
+    <% clock1 = Time.at(@station.clock1) %>
+    <% clock2 = Time.at(@station.clock2) %>
+    <% clock1_running = @station.clock1_running %>
+    <% clock2_running = @station.clock2_running %>
+    
+    
+    <div class="col-xs-6">
+    <div class="panel panel-default">
+      <div class="panel-body">
+        <div id="clock1_panel">
+          <%= link_to :controller => "stations", :action => "switch_clock1", :id => @station.id do %>
+      <div class="btn user_answer_btn" style="width: 100%;"><div id="clock1_icon"></div><div id="clock1"></div></div>
+      <% end %>
+      </div>
+      </div>
+    </div>
+    
+     <div class="panel panel-default">
+      <div class="panel-body">
+          <%= link_to :controller => "stations", :action => "reset_clock1", :id => @station.id do %>
+      <div class="btn user_answer_btn" style="width: 100%;"><h4><i class="fa fa-stop" aria-hidden="true"></i></h4>Reset</div>
+      <% end %>
+      </div>
+    </div>
+    </div>
+    
+
+
+    <div class="col-xs-6">
+    <div class="panel panel-default">
+      <div class="panel-body">
+        <div id="clock2_panel">
+          <%= link_to :controller => "stations", :action => "switch_clock2", :id => @station.id do %>
+      <div class="btn user_answer_btn" style="width: 100%;"><div id="clock2_icon"></div><div id="clock2"></div></div>
+      <% end %>
+      </div>
+      </div>
+    </div>
+    
+     <div class="panel panel-default">
+      <div class="panel-body">
+          <%= link_to :controller => "stations", :action => "reset_clock2", :id => @station.id do %>
+      <div class="btn user_answer_btn" style="width: 100%;"><h4><i class="fa fa-stop" aria-hidden="true"></i></h4>Reset</div>
+      <% end %>
+      </div>
+    </div>
+    </div>
+
+
+
+    <%= render "back_panel" %>
+
+
+    
+    
+  </div>
+  
+</div>
+
+<script type="text/javascript">
+var clock1_start = new Date("<%= clock1 %>");
+var clock1_first = true;
+var clock1_running = <%= clock1_running %>;
+var clock1_triggered = false;
+
+var clock2_start = new Date("<%= clock2 %>");
+var clock2_first = true;
+var clock2_running = <%= clock2_running %>;
+var clock2_triggered = false;
+
+$('#clock1_panel').click(function(event){
+    clock1_triggered = true;
+    clock1_running = !clock1_running;
+    clock1_icon();
+    
+    var now = new Date();
+    clock1_start= now - clock1_start;
+});
+
+$('#clock2_panel').click(function(event){
+    clock2_triggered = true;
+    clock2_running = !clock2_running;
+    clock2_icon();
+    var now = new Date();
+    clock2_start= now - clock2_start;
+});
+
+function clock1_icon(){
+  if(clock1_running){
+        $("#clock1_icon").html('<i class="fa fa-play" aria-hidden="true"></i>');
+    }
+    else{
+        $("#clock1_icon").html('<i class="fa fa-pause" aria-hidden="true"></i>');
+    }
+}
+
+function clock2_icon(){
+  if(clock2_running){
+        $("#clock2_icon").html('<i class="fa fa-play" aria-hidden="true"></i>');
+    }
+    else{
+        $("#clock2_icon").html('<i class="fa fa-pause" aria-hidden="true"></i>');
+    }
+}
+
+  function clock1() {
+    var today = new Date();
+    var diff = today - clock1_start;
+    today = new Date(diff);
+    if(!clock1_running){
+      today = new Date(clock1_start);
+    }
+    
+    var m = today.getMinutes();
+    var s = today.getSeconds();
+    var ms = getMilliseconds(today);
+    m = checkTime(m);
+    s = checkTime(s);
+    if(clock1_running || clock1_first){
+      clock1_first = false;
+      $("#clock1").html(m + ":" + s+ ":" + ms);
+    }
+    var t = setTimeout(clock1, 100);
+}
+
+function clock2() {
+    var today = new Date();
+    var diff = today - clock2_start;
+    today = new Date(diff);
+    if(!clock2_running){
+      today = new Date(clock2_start);
+    }
+    
+    var m = today.getMinutes();
+    var s = today.getSeconds();
+    var ms = getMilliseconds(today);
+    m = checkTime(m);
+    s = checkTime(s);
+    if(clock2_running || clock2_first){
+      clock2_first = false;
+      $("#clock2").html(m + ":" + s+ ":" + ms);
+    }
+    var t = setTimeout(clock2, 100);
+}
+
+
+function checkTime(i) {
+    if (i < 10) {i = "0" + i};  // add zero in front of numbers < 10
+    return i;
+}
+
+function getMilliseconds(today){
+  var ms = today.getMilliseconds();
+  ms=parseInt(ms/100);
+  return ms;
+}
+
+clock1();
+clock1_icon();
+clock2();
+clock2_icon();
+        
+</script>

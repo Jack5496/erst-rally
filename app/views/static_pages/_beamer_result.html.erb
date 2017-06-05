@@ -1,0 +1,15 @@
+<% if GamesController.beamer_show_answers_result %>
+  <% @quiz = GamesController.get_activ_quiz %>
+  <% @question = GamesController.get_activ_question %>
+  
+  <% user_a = User.find(@quiz.user_a_id) %>
+  <% user_b = User.find(@quiz.user_b_id) %>
+  
+  
+  <h5><div id="average">&nbsp;</div></h5>
+   <section class="col-md-12 vcenter">
+     <center>
+     <%= render "static_pages/beamer_chart" %>
+     </center>
+     </section>
+<% end %>

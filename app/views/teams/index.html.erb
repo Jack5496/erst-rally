@@ -1,0 +1,23 @@
+<% if logged_in? %>
+  <div class="row">
+    <aside class="col-xs-4">
+      <% if current_user.admin? %>
+        <%= render "new_team_panel" %>
+      <% end %>
+  </aside>
+    
+  <section class="col-xs-4">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title">Teams (<%= Team.all.count %>)</h3>
+      </div>
+    </div>
+  
+  </section>
+    
+    
+
+      
+
+    
+<% end %>

@@ -1,0 +1,75 @@
+<%= form_for(Station.new, html: { multipart: true }) do |f| %>
+
+ <div class="row">
+      <section class="col-xs-12">
+          <div class="panel panel-default">
+            <div class="panel-body">
+              <%= f.text_field :name, placeholder: "Name" , class: "answinput", required: true %>
+            </div>
+          </div>
+          <div class="panel panel-default">
+            <div class="panel-body">
+              <%= f.password_field :password, placeholder: "Passwort" , class: "answinput", required: true %>
+              <%= f.password_field :password_confirmation, placeholder: "Passwort wiederholen" , class: "answinput", required: true %>
+            </div>
+          </div>
+          <div class="panel panel-default">
+            <div class="panel-body">
+              <%= f.text_field :unit, placeholder: "Einheit" , class: "answinput", required: true %>
+            </div>
+          </div>
+          <div class="panel panel-default">
+            <div class="panel-heading"><h3 class="panel-title"><h4>Mehr besser?</h4></h3></div>
+            <div class="panel-body">
+              <%= f.check_box :high_better, :style => "width: 100%;" %>
+            </div>
+          </div>
+          <div class="panel panel-default">
+            <div class="panel-heading">
+              <h3 class="panel-title"><h4>Bild</h4></h3>
+              <h3 class="panel-title"><h4>iPhone bitte um 180° drehen</h4></h3>
+            </div>
+            <div class="panel-body">
+              <div class="btn user_answer_btn" style="width: 100%;">
+                <center><input type="file" id="station_picture" name="station[picture]" class="filestyle user_answer_btn" data-input="false" data-classIcon="fa fa-camera" data-buttonText=""></center>
+            </div>
+            </div>
+          </div>
+          
+          <div class="panel panel-default">
+            <div class="panel-body">
+              <%= f.text_field :phone, placeholder: "Telefon" , class: "answinput"%>
+            </div>
+          </div>
+          
+          <div class="panel panel-default">
+            <div class="panel-body">
+              <%= f.text_field :rules, placeholder: "Regeln" , class: "answinput"%>
+            </div>
+          </div>
+          
+      <div class="panel panel-default">
+        <div class="panel-body">
+          <%= f.hidden_field :rally_id, :value => @rally_id %><div class="btn user_answer_btn" style="width: 100%;">
+          <%= button_tag(type: "submit", class: "btn user_answer_btn", style: "width: 100%;") do %>
+              Erstellen
+          <% end %>
+        </div>
+      </div>
+    </section>
+  </div>
+
+
+<% end %>
+
+<script type="text/javascript">
+
+  $('#quiz_picture').change(function() {
+    var size_in_megabytes = this.files[0].size/1024/1024;
+    if (size_in_megabytes > 5) {
+      alert('Maximum file size is 5MB. Please choose a smaller file.');
+    }
+    
+  });
+</script>
+

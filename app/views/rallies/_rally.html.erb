@@ -1,0 +1,43 @@
+    <div class="panel panel-default">
+      <h3 class="panel-title">
+    <div class="btn-group alignright">
+      <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+        <span class="fa fa-caret-down" title="Toggle dropdown menu"></span>
+      </a>
+      <ul class="dropdown-menu pull-right">
+        <li><%= link_to rally do %><i class="fa fa-pencil fa-fw"></i> Edit<% end %></li>
+        <li class="divider"></li>
+        <li><%= link_to rally , method: :delete, data: { confirm: rally.name+"\nlöschen?" } do %><i class="fa fa-trash" aria-hidden="true"></i> Löschen<% end %></li>
+      </ul>
+    </div>
+    
+    
+    </h3>
+      <div class="panel-body">
+          <%= link_to rally do %>
+      <div class="btn user_answer_btn" style="width: 100%;"><%= rally.name %></div>
+      <% end %>
+      
+      
+      
+      <div class="panel panel-default">
+      <% if GamesController.get_activ_rally_id != rally.id %>
+        <div class="panel-heading"><%= link_to :controller => "rallies", :action => "set_rally_activ", :id => rally.id do %>
+          <div class="btn user_answer_btn" style="width: 100%;">Aktivieren</div>
+          <% end %>
+        </div>
+      <% else %>
+        <div class="panel-heading"><%= link_to :controller => "rallies", :action => "set_rally_activ", :id => nil do %>
+          <div class="btn user_answer_btn" style="width: 100%;">Deaktivieren</div>
+          <% end %>
+        </div>
+      <% end %>
+    </div>
+      
+      
+      
+      
+      
+      </div>
+    </div>
+

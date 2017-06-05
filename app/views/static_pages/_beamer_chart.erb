@@ -1,0 +1,535 @@
+    <style>
+        canvas {
+            -moz-user-select: none;
+            -webkit-user-select: none;
+            -ms-user-select: none;
+        }
+    </style>
+    <div style="width:100%;">
+        <canvas id="canvas" style="height: auto !important;" ></canvas>
+    </div>
+    <script>
+    
+
+    
+    <% user_a = User.find(GamesController.get_activ_quiz.user_a_id) %>
+    <% user_b = User.find(GamesController.get_activ_quiz.user_b_id) %>
+    
+    var startValue = <%= @question.min_value %>
+    var endValue = <%= @question.max_value %>
+    var lineDisplayWith = endValue-startValue;
+    var lineDisplayWithPercent = 70.0;
+    var lineDisplayWithRealOffset = (lineDisplayWith/lineDisplayWithPercent)*((100.0-lineDisplayWithPercent)/2);
+    
+    var points = [];
+    var average = [];
+    var user_a_answer = [];
+    var user_a_answer_line = [];
+    var user_b_answer = [];
+    var user_b_answer_line = [];
+
+    var offset = 0.5;
+    var user_offset_from_offset = 0.2;
+    var borderHeight = 0.025;
+    var lineThickness = 4;
+    
+    var max = new Array();
+    var ctx = null;
+    var xaxis = null;
+    var yaxis = null;
+    
+    var points_show = false;
+    var average_show = false;
+    
+    //reicht da alle Daten der benutzer bereits eingegeben worden sind => kein Live Update
+    var user_a_answer_content = null;
+    var user_b_answer_content = null;
+    
+    var average_value = <%=raw MicroquestionsController.get_average_value_of_answers(GamesController.get_activ_question) %>;
+    
+    
+    Chart.helpers.extend(Chart.controllers.line.prototype, {
+      draw: function() {
+        originalLineDraw.apply(this, arguments);
+    
+        var chartInstance = this.chart;
+        ctx = chartInstance.chart.ctx;
+    
+        xaxis = chartInstance.scales['x-axis-0'];
+        yaxis = chartInstance.scales['y-axis-0'];
+    
+        var limits = new Array();
+        
+
+        max["labelStart"] = ""+endValue;
+        max["labelEnd"] = "";
+        max["xStart"] = endValue;
+        max["xEnd"] = endValue;
+        max["yStart"] = offset+borderHeight;
+        max["yEnd"] = offset-borderHeight;
+        max["color"] = "";
+        limits.push(max);
+        
+        var min = new Array();
+        min["labelStart"] = "";
+        min["labelEnd"] = ""+startValue;
+        min["xStart"] = startValue;
+        min["xEnd"] = startValue;
+        min["yStart"] = offset-borderHeight;
+        min["yEnd"] = offset+borderHeight;
+        min["color"] = "";
+        limits.push(min);
+        
+        ctx.font="30px Arial";
+        ctx.fillStyle = 'black';
+        
+        if(user_a_answer_content!=null){
+            var user_a_name = "<%= user_a.name %>";
+            
+            draw_text_for_candidat(user_a_name,user_a_answer_content,offset+user_offset_from_offset,-30);
+            draw_text_for_candidat(user_a_answer_content,user_a_answer_content,offset+user_offset_from_offset,5);
+        }
+        
+        if(user_b_answer_content!=null){
+            var user_b_name = "<%= user_b.name %>";
+            
+            draw_text_for_candidat(user_b_name,user_b_answer_content,offset-user_offset_from_offset,-30);
+            draw_text_for_candidat(user_b_answer_content,user_b_answer_content,offset-user_offset_from_offset,5);
+        }
+        
+        if(average_show){
+            var diff_user_a_text = get_diff_for_user_answer_with_sign(user_a_answer_content);
+            var diff_user_b_text = get_diff_for_user_answer_with_sign(user_b_answer_content);
+            
+            var diff_user_a = Math.abs(get_diff_for_user_answer(user_a_answer_content));
+            var diff_user_b = Math.abs(get_diff_for_user_answer(user_b_answer_content));
+            
+            ctx.fillStyle = 'black';
+            if(diff_user_a<=diff_user_b){
+                ctx.fillStyle = 'red';
+            }
+            draw_text_for_candidat(diff_user_a_text,user_a_answer_content,offset+user_offset_from_offset,40);
+            
+            ctx.fillStyle = 'black';
+            if(diff_user_b<=diff_user_a){
+                ctx.fillStyle = 'red';
+            }
+            draw_text_for_candidat(diff_user_b_text,user_b_answer_content,offset-user_offset_from_offset,40);
+            
+        }
+    
+        for (var i = 0; i < limits.length; i++) {
+    
+          //Refactor the value
+          limits[i].xStart = xaxis.getPixelForValue(limits[i].xStart, undefined);
+          limits[i].xEnd = xaxis.getPixelForValue(limits[i].xEnd, undefined);
+          limits[i].yStart = yaxis.getPixelForValue(limits[i].yStart, undefined);
+          limits[i].yEnd = yaxis.getPixelForValue(limits[i].yEnd, undefined);
+          
+          //Fill Bound Text
+          ctx.font="18px Arial";
+          ctx.fillStyle = 'black';
+          ctx.fillText(limits[i].labelEnd, limits[i].xEnd-0, limits[i].yEnd - 10);
+          ctx.fillText(limits[i].labelStart, limits[i].xStart-ctx.measureText(limits[i].labelStart).width, limits[i].yStart - 10);
+        }
+      }
+    });
+    
+    function get_diff_for_user_answer_with_sign(user_answer){
+        var diff_user = (user_answer-average_value).toFixed(2);
+            if(diff_user>0){
+                diff_user = "+"+diff_user;
+            }
+        return diff_user;
+    }
+    
+    function get_diff_for_user_answer(user_answer){
+        var diff_user = (user_answer-average_value).toFixed(2);
+        return parseFloat(diff_user);
+    }
+    
+    function draw_text_for_candidat(text,user_answer,y_start,y_offset){
+        var user_offset = 70;    
+        var user_x = 0;
+        if(user_answer>average_value){
+            user_x = xaxis.getPixelForValue(user_answer, undefined)-user_offset-ctx.measureText(text).width;
+        }
+        else{
+            user_x = user_offset+xaxis.getPixelForValue(user_answer, undefined);
+        }
+            
+        user_a_y = yaxis.getPixelForValue(y_start, undefined);
+            
+        ctx.fillText(text, user_x, user_a_y+y_offset);
+    }
+    
+
+    var user_a = new Image();
+    
+    <% if user_a.picture.url ==nil %>
+        user_a.src = 'images/default/user_icon.png';
+    <% else %>
+        user_a.src = '<%= user_a.picture.url %>';
+    <% end %>
+    
+    var user_b = new Image();
+    <% if user_b.picture.url ==nil %>
+        user_b.src = 'images/default/user_icon.png';
+    <% else %>
+        user_b.src = '<%= user_b.picture.url %>';
+    <% end %>
+    
+    var data = {
+        datasets: [{
+            label: 'Durchschnitt',
+            data: average,
+            radius: 12,
+            borderColor: "#000000",
+            borderWidth: 2,
+            backgroundColor: "#00FF00"
+        },{
+            label: 'Antworten',
+            data: points,
+            radius: 6,
+            borderColor: "#000000",
+            borderWidth: 2,
+            pointStyle: "circle",
+            backgroundColor: "#FF0000"
+        },
+        {
+            label: 'Spieler 1',
+            data: user_a_answer,
+            radius: 1,
+            borderColor: "#000000",
+            borderWidth: 2,
+            pointStyle: user_a,
+        },
+        {
+            label: "Spieler 1 line",
+            lineTension: 0,
+            backgroundColor: "rgba(0,0,0,1)",
+            borderColor: "rgba(0,0,0,1)",
+            borderCapStyle: 'butt',
+            borderDash: [0],
+            borderDashOffset: 0.0,
+            showLine: true,
+            borderJoinStyle: 'miter',
+            pointBorderColor: "rgba(0,0,0,1)",
+            pointBackgroundColor: "rgba(1,0,0,1)",
+            pointRadius: 0,
+            pointStyle: "circle",
+            data: user_a_answer_line,
+            borderColor: "#000000",
+            borderWidth: 2,
+            backgroundColor: "#FF0000"
+        },
+        {
+            label: 'Spieler 2',
+            data: user_b_answer,
+            radius: 12,
+            borderColor: "#000000",
+            borderWidth: 2,
+            pointStyle: user_b,
+        },
+        {
+            label: "Spieler 2 line",
+            lineTension: 0,
+            backgroundColor: "rgba(0,0,0,1)",
+            borderColor: "rgba(0,0,0,1)",
+            borderCapStyle: 'butt',
+            borderDash: [0],
+            borderDashOffset: 0.0,
+            showLine: true,
+            borderJoinStyle: 'miter',
+            pointBorderColor: "rgba(0,0,0,1)",
+            pointBackgroundColor: "rgba(1,0,0,1)",
+            pointRadius: 0,
+            pointStyle: "circle",
+            data: user_b_answer_line,
+            borderColor: "#000000",
+            borderWidth: 2,
+            backgroundColor: "#FF0000"
+        },
+        {
+            label: "Leiste",
+            fill: false,
+            lineTension: 0,
+            backgroundColor: "rgba(0,0,0,1)",
+            borderColor: "rgba(0,0,0,1)",
+            borderCapStyle: 'butt',
+            borderDash: [0],
+            borderDashOffset: 0.0,
+            showLine: true,
+            borderJoinStyle: 'miter',
+            pointBorderColor: "rgba(0,0,0,1)",
+            pointBackgroundColor: "rgba(1,0,0,1)",
+            pointBorderWidth: 1,
+            pointRadius: 1,
+            pointStyle: "circle",
+            pointHitRadius: 1,
+            data: [{
+                x: startValue,
+                y: offset-borderHeight
+            },{
+                x: startValue,
+                y: offset+borderHeight
+            },{
+                x: startValue,
+                y: offset
+            },{
+                x: endValue,
+                y: offset
+            },{
+                x: endValue,
+                y: offset-borderHeight
+            },{
+                x: endValue,
+                y: offset+borderHeight
+            }],
+            borderColor: "#000000",
+            borderWidth: lineThickness,
+            backgroundColor: "#FF0000"
+        }
+        ]
+    };
+        
+        function load_canvas() {
+            var ctx = document.getElementById("canvas").getContext("2d");
+            ctx.canvas.width = window.innerWidth; 
+            ctx.canvas.height = window.innerHeight * 0.8; //fix scrolling on the side
+            
+            
+            chart_global = new Chart(ctx, {
+                type: 'line',
+                data,
+                options: {
+                    tooltips : {
+                        enabled: false      
+                    },
+                    legend: {
+                        display: false
+                    },
+                    showLines: false,
+                    scales: {
+                        xAxes: [{
+                            type: 'linear',
+                            gridLines: {
+                                display: false,    // 0 Vertical Line remove
+                                color: 'transparent'    //Bottom Line Transparent
+                            },
+                            position: 'bottom',
+                            ticks: {
+                                fontColor: "transparent",
+                                max: endValue+lineDisplayWithRealOffset,
+                                min: startValue-lineDisplayWithRealOffset,
+                                stepSize: 10
+                            }
+                        }],
+                        yAxes: [{
+                            display: false,
+                            gridLines: {
+                                display: true,
+                                color: 'transparent'
+                            },
+                            ticks: {
+                                max: 1,
+                                min: 0,
+                                stepSize: 1
+                            }
+                        }]
+                    },
+                }
+            });
+            
+            chart_reload_loop();
+        };
+        
+    function addData(x_value,y_value, user_id){
+        points.push({
+                x: x_value,
+                y: y_value,
+                user_id: user_id
+            });
+            chart_global.update();
+    }
+    
+    function resetData(){
+        while(points.length>0){
+            points.pop();
+        }
+        chart_global.update();
+    }
+    
+    var points_shown = false;
+    var average_shown = false;
+    var user_a_shown = false;
+    var user_b_shown = false;
+    
+    var audience_answers_audio = new Audio('/sounds/audience_answers.wav');
+    var audience_average_audio = new Audio('/sounds/audience_average.wav');
+    
+    //TODO: Sounds von Wer wird Millionär
+    var candidat_answer_a_audio = new Audio('/sounds/candidat_answer_a.wav');
+    var candidat_answer_b_audio = new Audio('/sounds/candidat_answer_b.wav');
+    
+    function check_if_content_was_updated(old_content,new_content,dataset_points_of_picture,dataset_line_to_picture,audio,display_abouve_line){
+        if(old_content!=new_content){
+            //Schonmal eine ändernung
+            
+            //okay wurde gelöscht => Alles löschen
+            while(dataset_points_of_picture.length>0){
+                dataset_points_of_picture.pop();
+                chart_global.update();
+            }
+            while(dataset_line_to_picture.length>0){
+                dataset_line_to_picture.pop();
+                chart_global.update();
+            }
+            
+            if(new_content!=null){
+                
+                var mult = -1;
+                if(display_abouve_line){
+                    mult=mult*-1;
+                }
+                
+                dataset_points_of_picture.push({
+                    x: new_content,
+                    y: offset+(user_offset_from_offset*mult)
+                });
+                dataset_line_to_picture.push(
+                {
+                    x: new_content,
+                    y: offset+(borderHeight*mult)
+                },
+                {
+                    x: new_content,
+                    y: offset+(user_offset_from_offset*mult)
+                });
+    
+                audio.play();
+                chart_global.update();
+            }
+        }
+    }
+    
+    function asign_new_content(new_content){
+        if(new_content==""){
+            new_content=null;
+        }
+        return new_content;
+    }
+    
+    function chart_reload_loop(){
+        if(chart_reload_function!=null){
+            chart_reload_function();
+        }
+    }
+    
+    function get_new_information(){
+         $.ajax({
+                type: 'GET',
+                url: '/get_beamer_chart_information',
+                data: $(this).serialize(),
+                dataType: 'json',
+                success: function (data) {
+                    move(data);
+                    setTimeout(chart_reload_loop, chart_reload_interval_in_seconds*interval);
+                },
+                error: function (data) {
+                    alert("Error");
+                    setTimeout(chart_reload_loop, chart_reload_interval_in_seconds*interval);
+                },
+                complete: function (data){
+                    //eine neue Anfrage soll erst gesendet werden, wenn die alte beantwortet wurde
+                }
+        });
+    }
+    
+    function move(json) {
+        points_show = json.show_audience==true;
+        average_show = json.show_audience_average==true;
+        
+        var new_content_a = asign_new_content(json.player_one_answer_content);
+        check_if_content_was_updated(user_a_answer_content,new_content_a,user_a_answer,user_a_answer_line,candidat_answer_a_audio,true);
+        user_a_answer_content = new_content_a;
+        
+        var new_content_b = asign_new_content(json.player_two_answer_content);
+        check_if_content_was_updated(user_b_answer_content,new_content_b,user_b_answer,user_b_answer_line,candidat_answer_b_audio,false);
+        user_b_answer_content = new_content_b;
+
+        if(points_show){
+            if(!points_shown){
+                points_shown = true;
+                        
+                //reicht da alle Daten der benutzer bereits eingegeben worden sind => kein Live Update
+                var answers = <%=raw MicroquestionsController.get_audience_answers_content(GamesController.get_activ_question) %>;
+                var answer_data = [];
+                            
+                var arrayLength = answers.length;
+                
+                for (var i = 0; i < arrayLength; i++) {
+                    answer_data.push({
+                        x: answers[i],
+                        y: Math.random()*0.05-0.05/2+offset,
+                        user_id: Math.random()*100
+                    });
+                }
+    
+                time_each_point = total_time_for_showing_audience_points_in_seconds*1000/answers.length
+    
+                audience_answers_audio.play();
+                show_one_more_point(answer_data);
+                            
+            }
+        }
+        else{
+            resetData();
+            points_shown = false;
+        }
+        
+        if(average_show){
+            if(!average_shown){
+                average_shown = true;
+                
+                average.push({
+                    x: average_value,
+                    y: offset
+                });
+                
+                $("#average").html("Durchschnitt: "+average_value);
+                audience_average_audio.play();
+                chart_global.update();
+            }
+        }
+        else{
+            while(average.length>0){
+                average.pop();
+                chart_global.update();
+            }
+            $("#average").html("&nbsp;");
+            average_shown = false;
+        }
+    }
+    
+    
+    var total_time_for_showing_audience_points_in_seconds = 5;
+    var time_each_point = 0;    //default wert
+    
+    function show_one_more_point(answer_data){
+        if(answer_data.length > 0){
+            answer = answer_data.pop();
+            addData(answer.x, answer.y, answer.user_id);
+            setTimeout(show_one_more_point.bind(null, answer_data), time_each_point);
+        }
+    }
+    
+    </script>
+    
+    
+    
+    
+    
+    
+    
+    

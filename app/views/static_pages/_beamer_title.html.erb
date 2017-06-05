@@ -1,0 +1,11 @@
+<% @quiz = GamesController.get_activ_quiz %>
+
+<% if @quiz == nil %>
+  <h3>Kein Quiz aktiv</h3>
+<% else %>
+  <% if @quiz.picture? %>
+    <%= image_tag(@quiz.picture.url, alt: "Titelbild") %>
+  <% else %>
+    <%= @quiz.name %>
+  <% end %>
+<% end %>

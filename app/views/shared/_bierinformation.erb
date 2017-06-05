@@ -1,0 +1,69 @@
+<% if logged_in? %>
+
+<div class="panel panel-default">
+      <div class="panel-body">
+          <%= link_to '#', 
+        :onclick => 'play_message_sound()' do %>
+      <div class="btn user_answer_btn" style="width: 100%;"><h4><i class="fa fa-undo" aria-hidden="true"></i></h4>Sound</div>
+      <% end %>
+      </div>
+    </div>
+
+        
+        <div id="reloadinformation_debug_raw" >Debug Raw</div>
+        
+        <script type="text/javascript">
+            var audio_update = new Audio('/sounds/message.wav');
+            audio_update.onended = function() {
+                alert("ended");
+                location.reload();
+            };
+            
+            function play_message_sound(){
+                audio_update.play();
+            }
+        
+            var interval = 1000;  // 1000 = 1 second, 3000 = 3 seconds
+            function update() {
+                $.ajax({
+                        type: 'GET',
+                        url: '/results',
+                        data: $(this).serialize(),
+                        dataType: 'json',
+                        success: function (data) {
+                            $('#reloadinformation_debug_raw').html("DebugInformation: "+data.needed_beer);  
+                            information_recieved(data);
+                            
+                        },
+                        complete: function (data) {
+                                // Schedule the next
+                                setTimeout(update, interval);
+                        }
+                });
+            }
+            setTimeout(update, interval);
+            
+            var first = true;
+            var needed_beer_old = 0;
+            
+            function information_recieved(json){
+                
+                var needed_beer_new = json.needed_beer || false;
+                var needed_beer_changed = needed_beer_new!=needed_beer_old;
+        
+                if (needed_beer_changed && !first){
+                    if(needed_beer_new>needed_beer_old){
+                        location.reload();
+                    }
+                    else{
+                        location.reload();
+                    }
+                }
+                
+                needed_beer_old = needed_beer_new;
+                first = false;
+                
+            }
+                
+        </script>
+<% end %>

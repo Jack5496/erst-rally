@@ -1,0 +1,10 @@
+<% provide(:title, "Rallies") %>
+<h4>Rallies (<%= Rally.all.count %>)</h4>
+<div class="row">
+    <section class="col-xs-12">
+        <%= will_paginate %>
+            <%= render @rallies %>
+        <%= will_paginate %>     
+        <%= render "new_rally_panel" %>
+    </section>
+</div>

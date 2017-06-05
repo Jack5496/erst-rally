@@ -1,0 +1,43 @@
+<% if logged_in? %>
+    <% if !current_user.admin? %>
+    
+        <div id="bierformation_debug_raw" class="hidden">Debug Raw</div>
+        
+        <script type="text/javascript">
+            var audio_update = new Audio('/sounds/audience_average.wav');
+        
+            var interval = 1000;  // 1000 = 1 second, 3000 = 3 seconds
+            function update() {
+                $.ajax({
+                        type: 'GET',
+                        url: '/results',
+                        data: $(this).serialize(),
+                        dataType: 'json',
+                        success: function (data) {
+                            $('#bierformation_debug_raw').html("DebugInformation: "+data);  
+                            information_recieved(data);
+                            
+                        },
+                        complete: function (data) {
+                                // Schedule the next
+                                setTimeout(update, interval);
+                        }
+                });
+            }
+            setTimeout(update, interval);
+            
+            function information_recieved(json){
+                var news_for_user = json.news_for_user || false;
+                
+                $("#beer_status").html(json.beer_status);
+                $("#erstis_status").html(json.erstis_status);
+                $("#chat_status").html(json.chat_status);
+            }
+            
+            function play_sound(){
+                audio_update.play();
+            }
+                
+        </script>
+    <% end %>
+<% end %>

@@ -1,0 +1,124 @@
+<%= csrf_meta_tag %> <!-- Damit bei einem AJAX Call der Auth. Token mitgesendet wird -->
+<% station = @station %>
+
+<div class="row">
+    
+    <section class="col-xs-12">
+           <div class="panel panel-default">
+               <div class="panel-body">
+                          <% if current_user.admin? %>
+                   <%= text_field_tag :station_name_input, @station.name, class: "answinput" , :id => "station_name", placeholder: "Station Name" %>
+                   <% else %>
+                    <center><h3><%= @station.name %></h3></center>
+                   <% end %>
+                </div>
+            </div>
+            
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                        <h3 class="panel-title"><h4>Handy Nr.</h4></h3>
+                        </div>
+               <div class="panel-body">
+                          <% if station.id==current_user.id || current_user.admin? %>
+                   <%= text_field_tag :station_phone_input, @station.phone, class: "answinput" , :id => "station_phone", placeholder: "Handy Nr." %>
+                   <% else %>
+                    <center><h3><%= @station.phone %></h3></center>
+                   <% end %>
+                </div>
+            </div>
+            
+             <% if current_user.admin? %>
+                 <div class="panel panel-default">
+                <div class="panel-heading"><h3 class="panel-title"><h4>Mehr besser?</h4></h3></div>
+                <div class="panel-body">
+                  <%= check_box_tag("station_higher_better", "checked", @station.high_better, :onclick=>'input_was_made();')%>
+                </div>
+              </div>
+            <% end %>
+            
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                        <h3 class="panel-title"><h4>Regeln</h4></h3>
+                        </div>
+               <div class="panel-body">
+                    <% if current_user.admin? %>
+                        <%= text_field_tag :station_rules_input, @station.rules, class: "answinput" , :id => "station_rules", placeholder: "Regeln" %>
+                    <% else %>
+                        <center><h4><%= @station.rules %></h4></center>
+                    <% end %>
+                </div>
+            </div>
+            
+            <div class="panel panel-default">
+               <div class="panel-body">
+
+                     <% if @station.picture? %>
+                                
+                        <%= image_tag(@station.picture.url, alt: "Titelbild" ) %>
+                        <div class="panel-heading"><%= link_to :controller => "stations", :action => "delete_picture", :id => @station.id do %>
+                        <h3 class="panel-title"><i class="fa fa-trash" aria-hidden="true"></i>Löschen</h3>
+                        <% end %>
+                        </div>
+                    <% else %>
+                        <% if station.id==current_user.id || current_user.admin? %>
+                        <%= render "picture" %>
+                        <% end %>
+                    <% end %>
+
+
+                </div>
+            </div>
+            
+           
+           
+           <%= render "stations/back_panel" %>
+            
+    </section>
+    
+</div>
+   
+
+<script type="text/javascript">
+    var last_change_made = new Date(); //time now in ms
+    var time_to_wait_until_save_changes_in_ms = 1*1000  // wait 1 sec
+
+    function check_time_passed_for_change(input_change_time){
+        if( last_change_made == input_change_time){
+            update();
+        }
+    }
+    
+    function input_was_made(){  
+        last_change_made = new Date();
+        setTimeout(check_time_passed_for_change.bind(null, last_change_made), time_to_wait_until_save_changes_in_ms);
+    }
+
+    function update() {
+      var station_name = $('#station_name').val();
+      var station_phone = $('#station_phone').val();
+      var station_rules = $('#station_rules').val();
+      var station_higher_better = $('#station_higher_better').is(":checked");
+     
+      var request = void 0;
+      request = $.ajax({type: "PUT",
+                        beforeSend: function(xhr) {xhr.setRequestHeader('X-CSRF-Token', $('meta[name="csrf-token"]').attr('content'))}, //<!-- Damit bei einem AJAX Call der Auth. Token mitgesendet wird -->
+                        dataType: "script",
+                        url: '/stations/'+<%= @station.id %>,
+                        contentType: 'application/json',
+                        data: JSON.stringify({ 'station': {'id': <%= @station.id %> ,
+                                                                'name': station_name,
+                                                                'rules': station_rules,
+                                                                'high_better': station_higher_better,
+                                                                'phone': station_phone
+                                                                }, _method:'put' })
+                }).done(function( msg ){
+                   //alert( "Klappt" );
+                });
+    };
+    
+    $('#station_name').on('input', input_was_made);
+    $('#station_phone').on('input', input_was_made);
+    $('#station_rules').on('input', input_was_made);
+    
+
+</script>

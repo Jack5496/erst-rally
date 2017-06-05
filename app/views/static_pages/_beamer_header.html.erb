@@ -1,0 +1,36 @@
+<% @question = GamesController.get_activ_question %>
+<% @quiz = GamesController.get_activ_quiz %>  
+  
+  <% user_a = User.find(@quiz.user_a_id) %>
+  <% user_b = User.find(@quiz.user_b_id) %>
+  
+<section>
+  <aside class="col-xs-2">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title">
+          <%= user_a.name %> <div id="user_a_points"><%= GamesController.get_total_points_for_player_in_activ_quiz(user_a) %></div>
+        </h3>
+      </div>
+    </div>
+  </aside>
+  
+  <section class="quiz_info col-xs-8">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h1 class="panel-title">
+          <center><h5><%= @question.content %></h5></center>
+        </h1>
+      </div>
+  </section>
+  
+   <aside class="col-xs-2">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title">
+          <%= user_b.name %> <div id="user_b_points"><%= GamesController.get_total_points_for_player_in_activ_quiz(user_b) %></div>
+        </h3>
+      </div>
+    </div>
+  </aside>
+</section>

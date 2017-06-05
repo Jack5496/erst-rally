@@ -1,0 +1,128 @@
+<% team = Team.find(team_id) %>
+<% station = Station.find(station_id) %>
+
+<% team_answer = station.microposts.find_by(team_id: team.id) %>
+<%  team_answered =  team_answer!= nil %>
+
+
+<% if ! team_answered %>
+    <%  team_answer = Micropost.new %>
+<% end %>
+
+<%= form_for(team_answer, html: { multipart: true }) do |f| %>
+  
+  <% @min_value = 0 %>
+  <% @max_value = 1000 %>
+  <% @start_value = @min_value %>
+  <% @unit_points_start = 0 %>
+  <% if  team_answered %>
+      <% @start_value =  team_answer.points %>
+      <% @unit_points_start = team_answer.unit_points %>
+  <% end %>
+  <div class="panel panel-default">
+            <div class="panel-heading">
+              <h3 class="panel-title"><h4><%= station.unit %><br>
+              
+              <% if station.high_better %>
+                Mehr besser
+              <% else %>
+                Weniger besser
+              <% end %>
+              
+              
+              </h4></h3>
+            </div>
+              <div class="panel-body">
+  <h4>
+        
+    
+        <%= f.number_field :unit_points, :min => @min_value, :max => 9999, :step => @step_value, :value => @unit_points_start, class: "answinput"%>
+      </h4>
+      </div>
+      </div>
+  
+  <% @step_value = 1 %>
+  
+  <div class="panel panel-default">
+            <div class="panel-heading"><h3 class="panel-title"><h4>Ballon?</h4></h3></div>
+            <div class="panel-body">
+              <%= f.check_box :ballon, :style => "width: 100%;" %>
+            </div>
+          </div>
+  
+             <div class="panel panel-default">
+            <div class="panel-heading">
+              <h3 class="panel-title"><h4>Bestechungspunkte</h4></h3>
+            </div>
+              <div class="panel-body">
+       
+     <div class="field phone">
+    <center>
+      <h4>
+        <%= f.number_field :points , :min => @min_value, :max => @max_value, :step => @step_value, :value => @start_value,  class: "answinput", :id => "deviceIDfield"%>
+      </h4>
+        
+      <table>
+        <tr>
+          <td>
+          </td>
+          <td> 
+          <input id="ex8" type="number_field"
+                          data-slider-min=<%= @min_value%> 
+                          data-slider-max=<%= @max_value %> 
+                          data-slider-step=<%= @step_value %> 
+                          data-slider-value=<%= @start_value %> />
+          </td>
+        </tr>
+      </table>
+  
+      <%= f.hidden_field :team_id, :value => team.id %>
+      <%= f.hidden_field :station_id, :value => station.id %>
+      
+      </div>
+      </div>
+  
+  </div>
+  
+      
+                   <div class="panel panel-default">
+              <div class="panel-body">
+                <% if team_answered %>
+                    <%= f.submit "Update", class: "btn user_answer_btn" %>
+                    </div>
+                    </div>
+                    
+                    <div class="panel panel-default">
+                    <div class="panel-body">
+                    <%= link_to :controller => "microposts", :action => "remote_destroy", :id =>  team_answer.id do %>
+                    <div class="btn user_answer_btn" style="width: 100%;">Löschen</div><% end %>
+                    
+                <% else %>
+                    <%= f.submit "Antworten", class: "btn user_answer_btn" %>
+                <% end %>
+                
+            </div>
+      
+      </div>
+      
+    </center>
+  
+          
+  <% end %>
+
+<script type="text/javascript">
+  $("#ex8").slider({
+  	tooltip: 'hide'
+  });
+
+  $("#ex8").on("slide", function(slideEvt) {
+  	 $("#deviceIDfield").val(slideEvt.value);
+  });
+  $("#ex8").on("slideStart", function(slideEvt) {
+  	 $("#deviceIDfield").val(slideEvt.value);
+  });
+  
+  $('#deviceIDfield').on('keyup', function(){
+     $("#ex8").slider('setValue',parseInt($('#deviceIDfield').val()));
+  });
+</script>

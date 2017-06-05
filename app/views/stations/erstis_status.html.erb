@@ -1,0 +1,48 @@
+<% provide(:title, @station.name) %>
+<div class="row">
+  <div class="col-xs-12">
+    
+    
+    
+    <div class="col-xs-6">
+    <div class="panel panel-default">
+      <div class="panel-body">
+          <%= link_to :controller => "stations", :action => "set_erstis_status", :id => @station.id, :status => '<i class="fa fa-users" aria-hidden="true"></i>' do %>
+      <div class="btn user_answer_btn" style="width: 100%;"><h4><i class="fa fa-users" aria-hidden="true"></i></h4>Zu viele</div>
+      <% end %>
+      </div>
+    </div>
+    
+    <% if current_user.admin? %>
+    <div class="panel panel-default">
+      <div class="panel-body">
+          <%= link_to :controller => "stations", :action => "set_erstis_status", :id => @station.id, :status => '<i class="fa fa-user-plus" aria-hidden="true"></i>' do %>
+      <div class="btn user_answer_btn" style="width: 100%;"><h4><i class="fa fa-user-plus" aria-hidden="true"></i></h4>Unterwegs</div>
+      <% end %>
+      </div>
+    </div>
+    <% end %>
+    
+  
+    </div>
+    <div class="col-xs-6">
+  
+  <div class="panel panel-default">
+      <div class="panel-body">
+          <%= link_to :controller => "stations", :action => "set_erstis_status", :id => @station.id, :status => '<i class="fa fa-user" aria-hidden="true"></i>' do %>
+      <div class="btn user_answer_btn" style="width: 100%;"><h4><i class="fa fa-user" aria-hidden="true"></i></h4>Wenig</div>
+      <% end %>
+      </div>
+    </div>
+    
+    </div>
+    
+    <%= render "back_panel" %>
+    
+    
+    
+    
+    
+  </div>
+  
+</div>

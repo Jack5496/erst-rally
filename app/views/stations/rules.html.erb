@@ -1,0 +1,60 @@
+<% provide(:title, @station.name) %>
+<div class="row">
+  <div class="col-xs-12">
+    <center>
+    
+    <div class="panel panel-default">  
+      <div class="panel-body">
+         <div class="btn user_answer_btn" style="width: 100%;"><h6><i class="fa fa-question" aria-hidden="true"></i></h6><%= @station.question %></div>
+      </div>
+    </div>
+    
+    <div class="panel panel-default">
+      <div class="panel-body">
+        <div class="btn user_answer_btn" style="width: 100%;"><h6><i class="fa fa-exclamation" aria-hidden="true"></i></h6><%= @station.answer %></div>
+      </div>
+    </div>
+    
+    
+    <%= form_for(@station, html: { multipart: true }) do |f| %>
+    
+    <div class="panel panel-default">
+    <div class="panel-heading"><h5>Text</h5>
+      </div>
+      <div class="panel-body">
+        <h6>
+        <% if current_user.admin? %>
+          <%= f.text_field :answer, placeholder: "Deine Antwort" , :value => '', class: "answinput" %>
+        <% else %>
+          <%= f.text_field :question, placeholder: "Deine Frage" , :value => '', class: "answinput" %>      
+        <% end %>
+        </h6>
+        
+      </div>
+    </div>
+    
+    </center>
+    
+    
+    <div class="panel panel-default">
+      <div class="panel-body">
+        
+        <%= f.submit "Antworten", class: "btn user_answer_btn" %>
+        
+      </div>
+    </div>
+    
+    <% end %>
+  
+  
+   
+  
+    
+    <%= render "back_panel" %>
+    
+    
+    
+    
+  </div>
+  
+</div>

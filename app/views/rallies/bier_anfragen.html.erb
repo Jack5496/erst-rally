@@ -1,0 +1,44 @@
+<% provide(:title, @rally.name) %>
+<%= render "shared/bierinformation" %>
+
+<div class="row">
+  <div class="col-xs-12">
+    
+    <% stations = GamesController.get_stations_for_rally(@rally) %>
+    <% found_one = false %>
+    
+    <% stations.each do |station| %>
+        <% need_beer = station.beer_status=='<i class="fa fa-battery-empty" aria-hidden="true"></i>' %>
+        <% if need_beer %>
+            <% found_one = true %>
+            <div class="panel panel-default">
+                <div class="panel-body"><%= link_to station do %>
+                    <div class="btn user_answer_btn" style="width: 100%;"><%= station.name %></div>
+                    <% end %>
+                </div>
+            </div>
+        
+        <% end %>
+    <% end %>
+    
+    <% if !found_one %>
+        <div class="panel panel-default">
+            <div class="panel-body">
+                <div class="btn user_answer_btn" style="width: 100%;">Alles gut</div>
+            </div>
+        </div>
+    <% end %>
+    
+    <div class="panel panel-default">
+                <div class="panel-body"><%= link_to @rally do %>
+                    <div class="btn user_answer_btn" style="width: 100%;">Zurück</div>
+                <% end %>
+                </div>
+            </div>
+    
+
+  
+    
+  </div>
+  
+</div>
